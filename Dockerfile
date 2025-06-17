@@ -15,10 +15,8 @@ USER node
 ENV N8N_COMMUNITY_PACKAGES_ENABLED=true
 ENV EXECUTIONS_PROCESS=main
 
-# Railway-specific
+# Basic n8n configuration
 ENV N8N_HOST=0.0.0.0
 ENV N8N_PORT=5678
-ENV N8N_PROTOCOL=https
-ENV WEBHOOK_URL=https://${{RAILWAY_PUBLIC_DOMAIN}}/
 
 CMD ["n8n", "start"]
