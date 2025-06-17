@@ -2,7 +2,7 @@ FROM n8nio/n8n:latest
 
 USER root
 
-# Install curl for debugging and setup
+# Install curl for debugging
 RUN apk add --no-cache curl
 
 # Create nodes directory with proper permissions
@@ -16,11 +16,9 @@ ENV N8N_COMMUNITY_PACKAGES_ENABLED=true
 ENV EXECUTIONS_PROCESS=main
 
 # Railway-specific
-ENV ENABLE_ALPINE_PRIVATE_NETWORKING=true
-
-# Set proxy environment variables (add your proxy here)
-ENV HTTP_PROXY=socks5://user107343:crhevm@185.159.84.163:2839
-ENV HTTPS_PROXY=socks5://user107343:crhevm@185.159.84.163:2839
-ENV ALL_PROXY=socks5://user107343:crhevm@185.159.84.163:2839
+ENV N8N_HOST=0.0.0.0
+ENV N8N_PORT=5678
+ENV N8N_PROTOCOL=https
+ENV WEBHOOK_URL=https://${{RAILWAY_PUBLIC_DOMAIN}}/
 
 CMD ["n8n", "start"]
