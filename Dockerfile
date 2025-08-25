@@ -1,12 +1,8 @@
-FROM n8nio/n8n:latest
+FROM n8nio/n8n:1.45.0
 
-WORKDIR /data
-
-# Skip the npm packages for now - they're not critical
-# n8n can access them through NODE_FUNCTION_ALLOW_EXTERNAL anyway
-
-# Just install TelePilot
 USER root
+
+# Install TelePilot version 0.3.0 (stable with older n8n)
 RUN mkdir -p /home/node/.n8n/nodes && \
     cd /home/node/.n8n/nodes && \
     npm install @telepilotco/n8n-nodes-telepilot@0.3.0 && \
