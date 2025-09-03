@@ -2,4 +2,4 @@
 healthcheckTimeout = 300
 restartPolicyMaxRetries = 8
 restartPolicyType = "on_failure"
-startCommand = "n8n start"
+startCommand = "sh -c 'sleep 10 && n8n start'"
