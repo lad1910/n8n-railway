@@ -1,26 +1,18 @@
-FROM ubuntu:22.04
+FROM n8nio/n8n:latest
 
 USER root
 
-# Install Node.js, npm, and dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    ca-certificates \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs
+# Install latest TelePilot version and patch emit override issues
+RUN mkdir -p /home/node/.n8n/nodes && \
+    cd /home/node/.n8n/nodes && \
+    npm install @telepilotco/n8n-nodes-telepilot@latest && \
+    find /home/node/.n8n/nodes -name '*.js' -type f | while read file; do \
+        if grep -q "this.emit.*=.*" "$file" 2>/dev/null; then \
+            sed -i 's/this\.emit\s*=//g' "$file"; \
+        fi; \
+    done && \
+    chown -R node:node /home/node/.n8n
 
-# Install n8n
-RUN npm install -g n8n
-
-# Install Playwright with browsers
-RUN npx playwright install chromium
-RUN npx playwright install-deps chromium
-
-# Install TelePilot
-RUN mkdir -p /root/.n8n/nodes && \
-    cd /root/.n8n/nodes && \
-    npm install @telepilotco/n8n-nodes-telepilot@latest
+USER node
 
 EXPOSE 5678
-
-CMD ["n8n", "start"]
