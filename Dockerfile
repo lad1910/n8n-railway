@@ -1,35 +1,26 @@
-FROM n8nio/n8n:latest
+FROM ubuntu:22.04
 
 USER root
 
-# Install Chromium for Alpine Linux
-RUN apk add --no-cache \
-    chromium \
-    chromium-chromedriver \
-    nss \
-    freetype \
-    harfbuzz \
+# Install Node.js, npm, and dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
     ca-certificates \
-    ttf-freefont \
-    font-noto-emoji
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
 
-# Set environment variables to force Playwright to use system Chromium
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
-    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 \
-    PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
+# Install n8n
+RUN npm install -g n8n
 
-# Install TelePilot (your existing code)
-RUN mkdir -p /home/node/.n8n/nodes && \
-    cd /home/node/.n8n/nodes && \
-    npm install @telepilotco/n8n-nodes-telepilot@latest && \
-    find /home/node/.n8n/nodes -name '*.js' -type f | while read file; do \
-        if grep -q "this.emit.*=.*" "$file" 2>/dev/null; then \
-            sed -i 's/this\.emit\s*=//g' "$file"; \
-        fi; \
-    done && \
-    chown -R node:node /home/node/.n8n
+# Install Playwright with browsers
+RUN npx playwright install chromium
+RUN npx playwright install-deps chromium
 
-USER node
+# Install TelePilot
+RUN mkdir -p /root/.n8n/nodes && \
+    cd /root/.n8n/nodes && \
+    npm install @telepilotco/n8n-nodes-telepilot@latest
 
 EXPOSE 5678
+
+CMD ["n8n", "start"]
