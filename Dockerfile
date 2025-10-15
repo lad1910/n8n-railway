@@ -2,18 +2,22 @@ FROM n8nio/n8n:latest
 
 USER root
 
-# Install minimal Chromium dependencies for Alpine
+# Install Chromium for Alpine Linux
 RUN apk add --no-cache \
     chromium \
+    chromium-chromedriver \
     nss \
     freetype \
     harfbuzz \
     ca-certificates \
-    ttf-freefont
+    ttf-freefont \
+    font-noto-emoji
 
-# Set Chromium path
+# Set environment variables to force Playwright to use system Chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 \
+    PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Install TelePilot (your existing code)
 RUN mkdir -p /home/node/.n8n/nodes && \
@@ -25,9 +29,6 @@ RUN mkdir -p /home/node/.n8n/nodes && \
         fi; \
     done && \
     chown -R node:node /home/node/.n8n
-
-# Install Playwright browsers
-RUN npx playwright install chromium
 
 USER node
 
