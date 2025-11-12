@@ -13,6 +13,20 @@ RUN mkdir -p /home/node/.n8n/nodes && \
     done && \
     chown -R node:node /home/node/.n8n
 
+# ===================================================================
+# ADD IMAGE SUPPORT - NEW SECTION
+# ===================================================================
+
+# Copy the follow-up image into the container
+COPY image/followup.png /home/node/.n8n/image/followup.png
+
+# Create image directory and set permissions
+RUN mkdir -p /home/node/.n8n/image && \
+    chown -R node:node /home/node/.n8n/image && \
+    chmod -R 755 /home/node/.n8n/image
+
+# ===================================================================
+
 USER node
 
 EXPOSE 5678
