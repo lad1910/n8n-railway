@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /
+Allow: /webhook/
+Allow: /webhook_test/
+Allow: /api/v1/webhooks/
